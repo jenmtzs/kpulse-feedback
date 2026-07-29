@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPulse — Feedback Anónimo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#140630;
+    --surface1:#1a0b3b;
+    --surface2:#1f1045;
+    --black-space:#0D1526;
+    --teal:#0BD8A2;
+    --blue:#186BF3;
+    --purple:#8D30AD;
+    --aqua:#35DBE8;
+    --neon:#49FBD6;
+    --pink:#DD35D9;
+    --white95:rgba(255,255,255,.95);
+    --white65:rgba(255,255,255,.65);
+    --white35:rgba(255,255,255,.35);
+    --border:rgba(255,255,255,.07);
+    --gradient:linear-gradient(258deg,#0BD8A2,#49FBD6,#8D30AD,#35DBE8);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(139,48,173,0.18), transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(11,216,162,0.10), transparent 40%);
+    font-family:'DM Sans', sans-serif;
+    color:var(--white65);
+    min-height:100vh;
+    padding:40px 16px 70px;
+  }
+  .wrap{max-width:920px;margin:0 auto;position:relative;}
+  .sidebar-line{
+    position:fixed;left:22px;top:0;bottom:0;width:1px;
+    border-right:1px dashed rgba(139,48,173,.3);
+    display:none;
+  }
+  @media (min-width:1100px){.sidebar-line{display:block;}}
+
+  header{text-align:center;margin-bottom:36px;}
+  .badge{
+    display:inline-block;background:var(--purple);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.09em;text-transform:uppercase;padding:5px 14px;border-radius:4px;margin-bottom:16px;
+  }
+  h1{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-size:44px;
+    font-weight:800;
+    letter-spacing:-0.03em;
+    margin:0 0 10px;
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    line-height:1.1;
+  }
+  header p{
+    color:var(--white65);
+    font-size:15px;
+    max-width:480px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+  .gradient-divider{height:3px;background:var(--gradient);border-radius:2px;margin:28px 0;}
+
+  h2.section-title{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-size:19px;
+    font-weight:700;
+    color:var(--teal);
+    margin:0 0 16px;
+  }
+
+  .card{
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:26px 28px;
+    margin-bottom:28px;
+  }
+
+  /* --- Pulse questions --- */
+  .pulse-question{margin-bottom:26px;}
+  .pulse-question:last-child{margin-bottom:0;}
+  .pulse-label{
+    font-size:15px;
+    font-weight:700;
+    color:var(--white95);
+    margin-bottom:12px;
+  }
+  .pulse-options{display:flex;gap:10px;flex-wrap:wrap;}
+  .pulse-btn{
+    flex:1;
+    min-width:100px;
+    background:var(--surface2);
+    border:1px solid var(--border);
+    color:var(--white65);
+    border-radius:10px;
+    padding:12px 10px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    text-align:center;
+  }
+  .pulse-btn:hover{transform:translateY(-2px);border-color:rgba(11,216,162,.4);}
+  .pulse-btn.selected{background:var(--teal);color:#0D1526;border-color:var(--teal);}
+  .pulse-btn:disabled{opacity:.55;cursor:not-allowed;}
+
+  .results{margin-top:14px;}
+  .result-row{margin-bottom:10px;}
+  .result-row-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--white35);margin-bottom:4px;font-family:'DM Mono',monospace;}
+  .bar-track{background:rgba(255,255,255,.06);border-radius:999px;height:8px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;background:var(--gradient);}
+  .total-votes{font-size:11px;color:var(--white35);margin-top:8px;font-family:'DM Mono',monospace;}
+
+  /* --- Composer --- */
+  .category-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .cat-btn{
+    border:1px solid var(--border);
+    background:var(--surface2);
+    color:var(--white65);
+    border-radius:999px;
+    padding:7px 14px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .cat-btn.active{border-color:var(--teal);color:var(--teal);}
+
+  textarea{
+    width:100%;
+    min-height:90px;
+    border:none;
+    border-bottom:1px solid var(--border);
+    background:transparent;
+    font-family:'DM Sans', sans-serif;
+    font-size:15px;
+    color:var(--white95);
+    resize:vertical;
+    outline:none;
+    padding:8px 0;
+  }
+  textarea::placeholder{color:var(--white35);}
+
+  .composer-footer{
+    display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px;
+  }
+  .hint{font-size:12px;color:var(--white35);font-family:'DM Mono',monospace;}
+  button.send{
+    background:var(--gradient);
+    color:#0D1526;
+    border:none;
+    border-radius:999px;
+    padding:10px 22px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    transition:opacity .15s ease, transform .15s ease;
+  }
+  button.send:hover{transform:translateY(-1px);opacity:.92;}
+  button.send:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* --- Notes board --- */
+  .board{
+    display:flex;flex-wrap:wrap;gap:14px;
+  }
+  .empty-state{
+    color:var(--white35);
+    font-size:14px;
+    text-align:center;
+    width:100%;
+    padding:30px 0;
+  }
+  .note{
+    width:210px;
+    background:var(--surface2);
+    border:1px solid var(--border);
+    border-top:3px solid var(--teal);
+    border-radius:10px;
+    padding:14px 14px 10px;
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--white95);
+  }
+  .note.tema{border-top-color:var(--teal);}
+  .note.espacio{border-top-color:var(--blue);}
+  .note.general{border-top-color:var(--pink);}
+  .note .cat-tag{
+    display:inline-block;
+    font-size:10px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--white35);
+    margin-bottom:8px;
+  }
+  .note .ts{
+    display:block;
+    font-family:'DM Mono', monospace;
+    font-size:10px;
+    color:var(--white35);
+    margin-top:10px;
+  }
+
+  footer.foot{
+    text-align:center;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--white35);
+    font-family:'DM Mono', monospace;
+  }
+  .reset-link{color:var(--white35);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;font-size:12px;}
+
+  @media (prefers-reduced-motion: reduce){
+    .note, button, .pulse-btn, .cat-btn{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="sidebar-line"></div>
+<div class="wrap">
+  <header>
+    <div class="badge">KPulse · Feedback anónimo</div>
+    <h1>¿Cómo te fue con la charla de ayer?</h1>
+    <p>Nadie sabe quién respondió. Tu voto y tus notas ayudan a decidir el próximo tema y el próximo espacio de KPulse.</p>
+  </header>
+
+  <div class="gradient-divider"></div>
+
+  <div class="card">
+    <h2 class="section-title">El pulso rápido</h2>
+
+    <div class="pulse-question" data-question="liked">
+      <div class="pulse-label">¿Te gustó la charla?</div>
+      <div class="pulse-options">
+        <button class="pulse-btn" data-value="si">😍 Sí, mucho</button>
+        <button class="pulse-btn" data-value="masomenos">🙂 Más o menos</button>
+        <button class="pulse-btn" data-value="no">😕 No tanto</button>
+      </div>
+      <div class="results" data-results="liked"></div>
+    </div>
+
+    <div class="pulse-question" data-question="return">
+      <div class="pulse-label">¿Volverías definitivamente a la próxima KPulse?</div>
+      <div class="pulse-options">
+        <button class="pulse-btn" data-value="si">✅ Sí, seguro</button>
+        <button class="pulse-btn" data-value="talvez">🤔 Tal vez</button>
+        <button class="pulse-btn" data-value="no">🚫 No creo</button>
+      </div>
+      <div class="results" data-results="return"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Notas y sugerencias</h2>
+    <div class="category-row" id="categoryRow">
+      <button class="cat-btn active" data-cat="tema">💡 Tema sugerido</button>
+      <button class="cat-btn" data-cat="espacio">🏠 Sobre el espacio</button>
+      <button class="cat-btn" data-cat="general">💬 Comentario general</button>
+    </div>
+    <textarea id="noteInput" maxlength="240" placeholder="Ej: me encantaría una charla sobre... / el espacio estuvo muy ruidoso / la duración fue perfecta..."></textarea>
+    <div class="composer-footer">
+      <span class="hint" id="charCount">0 / 240</span>
+      <button class="send" id="sendBtn">Enviar nota</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Lo que ha dicho el equipo</h2>
+    <div class="board" id="board"></div>
+  </div>
+
+  <footer class="foot">
+    Respuestas anónimas y compartidas para todo el equipo que abra este mismo espacio.
+    <br>
+    <button class="reset-link" id="resetLink">Reiniciar todos los datos</button>
+  </footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'kpulse-feedback-data';
+
+let data = {
+  liked: {si:0, masomenos:0, no:0},
+  return: {si:0, talvez:0, no:0},
+  notes: []
+};
+
+let selectedCategory = 'tema';
+let votedLiked = false;
+let votedReturn = false;
+
+const board = document.getElementById('board');
+const noteInput = document.getElementById('noteInput');
+const charCount = document.getElementById('charCount');
+const sendBtn = document.getElementById('sendBtn');
+const categoryRow = document.getElementById('categoryRow');
+const resetLink = document.getElementById('resetLink');
+
+categoryRow.addEventListener('click', (e) => {
+  const btn = e.target.closest('.cat-btn');
+  if(!btn) return;
+  selectedCategory = btn.dataset.cat;
+  [...categoryRow.children].forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+noteInput.addEventListener('input', () => {
+  charCount.textContent = `${noteInput.value.length} / 240`;
+});
+
+const LABELS = {
+  liked: {si:'Sí, mucho', masomenos:'Más o menos', no:'No tanto'},
+  return: {si:'Sí, seguro', talvez:'Tal vez', no:'No creo'}
+};
+
+function renderResults(question){
+  const el = document.querySelector(`[data-results="${question}"]`);
+  const counts = data[question];
+  const total = Object.values(counts).reduce((a,b) => a+b, 0);
+  el.innerHTML = '';
+  Object.keys(counts).forEach(key => {
+    const pct = total > 0 ? Math.round((counts[key] / total) * 100) : 0;
+    const row = document.createElement('div');
+    row.className = 'result-row';
+    row.innerHTML = `
+      <div class="result-row-labels"><span>${LABELS[question][key]}</span><span>${pct}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+    `;
+    el.appendChild(row);
+  });
+  const totalEl = document.createElement('div');
+  totalEl.className = 'total-votes';
+  totalEl.textContent = `${total} voto${total === 1 ? '' : 's'}`;
+  el.appendChild(totalEl);
+}
+
+function renderBoard(){
+  board.innerHTML = '';
+  if(data.notes.length === 0){
+    board.innerHTML = '<div class="empty-state">Aún no hay notas. ¡Sé el primero en dejar una sugerencia!</div>';
+    return;
+  }
+  const catLabel = {tema:'Tema sugerido', espacio:'Sobre el espacio', general:'Comentario general'};
+  [...data.notes].reverse().forEach(n => {
+    const div = document.createElement('div');
+    div.className = `note ${n.category}`;
+    const dateStr = new Date(n.ts).toLocaleDateString('es-CO', {day:'2-digit', month:'short'});
+    div.innerHTML = `
+      <span class="cat-tag">${catLabel[n.category] || 'Comentario'}</span>
+      <div>${escapeHtml(n.text)}</div>
+      <span class="ts">${dateStr}</span>
+    `;
+    board.appendChild(div);
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function loadData(){
+  try{
+    const result = await window.storage.get(STORAGE_KEY, true);
+    if(result && result.value){
+      data = JSON.parse(result.value);
+      data.liked = data.liked || {si:0, masomenos:0, no:0};
+      data.return = data.return || {si:0, talvez:0, no:0};
+      data.notes = data.notes || [];
+    }
+  }catch(e){
+    // no data yet, use defaults
+  }
+  renderResults('liked');
+  renderResults('return');
+  renderBoard();
+}
+
+async function saveData(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
+  }catch(e){
+    console.error('No se pudo guardar', e);
+  }
+}
+
+document.querySelectorAll('.pulse-question').forEach(q => {
+  const question = q.dataset.question;
+  q.querySelectorAll('.pulse-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const alreadyVoted = question === 'liked' ? votedLiked : votedReturn;
+      if(alreadyVoted) return;
+      const value = btn.dataset.value;
+      data[question][value] = (data[question][value] || 0) + 1;
+      if(question === 'liked') votedLiked = true; else votedReturn = true;
+      q.querySelectorAll('.pulse-btn').forEach(b => {
+        b.disabled = true;
+        if(b === btn) b.classList.add('selected');
+      });
+      await saveData();
+      renderResults(question);
+    });
+  });
+});
+
+sendBtn.addEventListener('click', async () => {
+  const text = noteInput.value.trim();
+  if(!text) return;
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Enviando...';
+
+  data.notes.push({
+    text,
+    category: selectedCategory,
+    ts: Date.now()
+  });
+
+  await saveData();
+  renderBoard();
+
+  noteInput.value = '';
+  charCount.textContent = '0 / 240';
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Enviar nota';
+});
+
+resetLink.addEventListener('click', async () => {
+  if(!confirm('¿Reiniciar todos los votos y notas para todo el equipo? Esto no se puede deshacer.')) return;
+  data = {liked:{si:0,masomenos:0,no:0}, return:{si:0,talvez:0,no:0}, notes:[]};
+  await saveData();
+  votedLiked = false;
+  votedReturn = false;
+  document.querySelectorAll('.pulse-btn').forEach(b => {b.disabled = false; b.classList.remove('selected');});
+  renderResults('liked');
+  renderResults('return');
+  renderBoard();
+});
+
+loadData();
+</script>
+</body>
+</html>
