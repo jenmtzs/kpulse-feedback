@@ -3,453 +3,400 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KPulse — Feedback Anónimo</title>
+<title>Feedback K-Pulse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#140630;
-    --surface1:#1a0b3b;
-    --surface2:#1f1045;
-    --black-space:#0D1526;
+    --surface:#1a0b3b;
+    --surface-2:#1f1045;
+    --ink:rgba(255,255,255,.95);
+    --ink-2:rgba(255,255,255,.72);
+    --ink-3:rgba(255,255,255,.58);
+    --line:rgba(255,255,255,.10);
     --teal:#0BD8A2;
-    --blue:#186BF3;
-    --purple:#8D30AD;
-    --aqua:#35DBE8;
     --neon:#49FBD6;
-    --pink:#DD35D9;
-    --white95:rgba(255,255,255,.95);
-    --white65:rgba(255,255,255,.65);
-    --white35:rgba(255,255,255,.35);
-    --border:rgba(255,255,255,.07);
+    --purple:#8D30AD;
+    --on-teal:#0D1526;
+    --error:#FF9DB0;
     --gradient:linear-gradient(258deg,#0BD8A2,#49FBD6,#8D30AD,#35DBE8);
+    --font-display:'Plus Jakarta Sans',system-ui,sans-serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+    --font-mono:'DM Mono',ui-monospace,monospace;
+    color-scheme:dark;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:var(--bg);
+    background-color:var(--bg);
     background-image:
-      radial-gradient(circle at 15% 0%, rgba(139,48,173,0.18), transparent 45%),
-      radial-gradient(circle at 90% 10%, rgba(11,216,162,0.10), transparent 40%);
-    font-family:'DM Sans', sans-serif;
-    color:var(--white65);
+      radial-gradient(circle at 15% 0%, rgba(141,48,173,.20), transparent 45%),
+      radial-gradient(circle at 90% 8%, rgba(11,216,162,.10), transparent 40%);
+    background-repeat:no-repeat;
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.55;
+    color:var(--ink-2);
+    padding:40px max(16px, env(safe-area-inset-right, 0px)) 72px max(16px, env(safe-area-inset-left, 0px));
     min-height:100vh;
-    padding:40px 16px 70px;
   }
-  .wrap{max-width:920px;margin:0 auto;position:relative;}
-  .sidebar-line{
-    position:fixed;left:22px;top:0;bottom:0;width:1px;
-    border-right:1px dashed rgba(139,48,173,.3);
-    display:none;
-  }
-  @media (min-width:1100px){.sidebar-line{display:block;}}
-
-  header{text-align:center;margin-bottom:36px;}
-  .badge{
-    display:inline-block;background:var(--purple);color:#fff;font-size:11px;font-weight:700;
-    letter-spacing:.09em;text-transform:uppercase;padding:5px 14px;border-radius:4px;margin-bottom:16px;
-  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{text-align:center;margin-bottom:8px;}
+  .badge{display:inline-block;background:var(--purple);color:#fff;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:5px 14px;border-radius:4px;margin-bottom:16px;}
   h1{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-size:44px;
+    font-family:var(--font-display);
+    font-size:clamp(32px, 7vw, 46px);
     font-weight:800;
-    letter-spacing:-0.03em;
+    letter-spacing:-.03em;
+    line-height:1.1;
     margin:0 0 10px;
+    color:var(--neon);
     background:var(--gradient);
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
     background-clip:text;
-    line-height:1.1;
+    text-wrap:balance;
   }
-  header p{
-    color:var(--white65);
-    font-size:15px;
-    max-width:480px;
-    margin:0 auto;
-    line-height:1.6;
-  }
-  .gradient-divider{height:3px;background:var(--gradient);border-radius:2px;margin:28px 0;}
-
-  h2.section-title{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-size:19px;
-    font-weight:700;
-    color:var(--teal);
-    margin:0 0 16px;
-  }
-
-  .card{
-    background:var(--surface1);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:26px 28px;
-    margin-bottom:28px;
-  }
-
-  /* --- Pulse questions --- */
-  .pulse-question{margin-bottom:26px;}
-  .pulse-question:last-child{margin-bottom:0;}
-  .pulse-label{
-    font-size:15px;
-    font-weight:700;
-    color:var(--white95);
-    margin-bottom:12px;
-  }
-  .pulse-options{display:flex;gap:10px;flex-wrap:wrap;}
-  .pulse-btn{
-    flex:1;
-    min-width:100px;
-    background:var(--surface2);
-    border:1px solid var(--border);
-    color:var(--white65);
-    border-radius:10px;
-    padding:12px 10px;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
-    font-family:'DM Sans',sans-serif;
-    transition:transform .15s ease, border-color .15s ease, background .15s ease;
-    text-align:center;
-  }
-  .pulse-btn:hover{transform:translateY(-2px);border-color:rgba(11,216,162,.4);}
-  .pulse-btn.selected{background:var(--teal);color:#0D1526;border-color:var(--teal);}
-  .pulse-btn:disabled{opacity:.55;cursor:not-allowed;}
-
-  .results{margin-top:14px;}
-  .result-row{margin-bottom:10px;}
-  .result-row-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--white35);margin-bottom:4px;font-family:'DM Mono',monospace;}
-  .bar-track{background:rgba(255,255,255,.06);border-radius:999px;height:8px;overflow:hidden;}
-  .bar-fill{height:100%;border-radius:999px;background:var(--gradient);}
-  .total-votes{font-size:11px;color:var(--white35);margin-top:8px;font-family:'DM Mono',monospace;}
-
-  /* --- Composer --- */
-  .category-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-  .cat-btn{
-    border:1px solid var(--border);
-    background:var(--surface2);
-    color:var(--white65);
-    border-radius:999px;
-    padding:7px 14px;
-    font-size:13px;
-    cursor:pointer;
-    font-family:'DM Sans',sans-serif;
-    transition:border-color .15s ease, color .15s ease;
-  }
-  .cat-btn.active{border-color:var(--teal);color:var(--teal);}
-
-  textarea{
-    width:100%;
-    min-height:90px;
-    border:none;
-    border-bottom:1px solid var(--border);
-    background:transparent;
-    font-family:'DM Sans', sans-serif;
-    font-size:15px;
-    color:var(--white95);
-    resize:vertical;
-    outline:none;
-    padding:8px 0;
-  }
-  textarea::placeholder{color:var(--white35);}
-
-  .composer-footer{
-    display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px;
-  }
-  .hint{font-size:12px;color:var(--white35);font-family:'DM Mono',monospace;}
-  button.send{
-    background:var(--gradient);
-    color:#0D1526;
-    border:none;
-    border-radius:999px;
-    padding:10px 22px;
-    font-size:14px;
-    font-weight:700;
-    cursor:pointer;
-    font-family:'DM Sans',sans-serif;
-    transition:opacity .15s ease, transform .15s ease;
-  }
-  button.send:hover{transform:translateY(-1px);opacity:.92;}
-  button.send:disabled{opacity:.4;cursor:not-allowed;}
-
-  /* --- Notes board --- */
-  .board{
-    display:flex;flex-wrap:wrap;gap:14px;
-  }
-  .empty-state{
-    color:var(--white35);
-    font-size:14px;
-    text-align:center;
-    width:100%;
-    padding:30px 0;
-  }
-  .note{
-    width:210px;
-    background:var(--surface2);
-    border:1px solid var(--border);
-    border-top:3px solid var(--teal);
-    border-radius:10px;
-    padding:14px 14px 10px;
-    font-size:13.5px;
-    line-height:1.5;
-    color:var(--white95);
-  }
-  .note.tema{border-top-color:var(--teal);}
-  .note.espacio{border-top-color:var(--blue);}
-  .note.general{border-top-color:var(--pink);}
-  .note .cat-tag{
-    display:inline-block;
-    font-size:10px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    color:var(--white35);
-    margin-bottom:8px;
-  }
-  .note .ts{
-    display:block;
-    font-family:'DM Mono', monospace;
-    font-size:10px;
-    color:var(--white35);
-    margin-top:10px;
-  }
-
-  footer.foot{
-    text-align:center;
-    margin-top:10px;
-    font-size:12px;
-    color:var(--white35);
-    font-family:'DM Mono', monospace;
-  }
-  .reset-link{color:var(--white35);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;font-size:12px;}
-
-  @media (prefers-reduced-motion: reduce){
-    .note, button, .pulse-btn, .cat-btn{transition:none;}
-  }
+  .talk{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--ink);margin:0 0 8px;}
+  .lead{max-width:460px;margin:0 auto;color:var(--ink-2);text-wrap:balance;}
+  .divider{height:3px;background:var(--gradient);border-radius:2px;margin:28px 0;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:24px;}
+  .card h2{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--teal);margin:0 0 6px;}
+  .notice{border:1px dashed rgba(255,157,176,.5);color:var(--error);border-radius:12px;padding:14px 18px;margin-bottom:24px;font-size:14px;}
+  fieldset{border:0;margin:0 0 28px;padding:0;min-width:0;}
+  fieldset:last-of-type{margin-bottom:0;}
+  legend{padding:0;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.4;}
+  .optional{font-weight:400;color:var(--ink-3);font-size:13px;}
+  .opts{display:flex;flex-wrap:wrap;gap:10px;}
+  .opt{position:relative;flex:1 1 110px;min-width:0;}
+  .opt.topic{flex:0 1 auto;}
+  .opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer;}
+  .opt span{display:block;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);border-radius:10px;padding:12px 14px;font-size:14px;font-weight:500;text-align:center;transition:border-color .15s ease, background .15s ease;}
+  .opt.topic span{border-radius:999px;padding:9px 16px;}
+  .opt:hover span{border-color:rgba(11,216,162,.5);}
+  .opt input:checked + span{background:var(--teal);border-color:var(--teal);color:var(--on-teal);font-weight:700;}
+  .opt input:focus-visible + span{outline:2px solid var(--neon);outline-offset:2px;}
+  input[type="text"], textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:var(--font-body);font-size:15px;padding:11px 14px;outline:none;}
+  input[type="text"]::placeholder, textarea::placeholder{color:var(--ink-3);}
+  input[type="text"]:focus-visible, textarea:focus-visible{border-color:var(--teal);outline:2px solid rgba(73,251,214,.35);outline-offset:1px;}
+  textarea{min-height:96px;resize:vertical;}
+  #otroWrap{margin-top:12px;}
+  .form-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid var(--line);}
+  .hint{font-family:var(--font-mono);font-size:12px;color:var(--ink-3);}
+  #formMsg{min-height:20px;margin:14px 0 0;font-size:14px;color:var(--error);}
+  button{font-family:var(--font-body);}
+  .btn-send{background:var(--gradient);color:var(--on-teal);border:0;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s ease, opacity .15s ease;}
+  .btn-send:hover{transform:translateY(-1px);opacity:.93;}
+  .btn-send:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-send:focus-visible, .btn-ghost:focus-visible{outline:2px solid var(--neon);outline-offset:2px;}
+  .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;}
+  .btn-ghost:hover{border-color:rgba(11,216,162,.5);color:var(--ink);}
+  .thanks{border-color:rgba(11,216,162,.35);}
+  .thanks p{margin:0;}
+  .results-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .res-block{margin-top:26px;}
+  .res-block:first-of-type{margin-top:18px;}
+  .res-q{font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;line-height:1.4;}
+  .row{margin-bottom:10px;}
+  .row-labels{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-2);margin-bottom:5px;}
+  .row-labels .num{font-family:var(--font-mono);font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .track{background:rgba(255,255,255,.07);border-radius:999px;height:8px;overflow:hidden;}
+  .fill{height:100%;border-radius:999px;background:var(--teal);}
+  .row.top .fill{background:var(--gradient);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .chip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);overflow-wrap:anywhere;}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+  .note{background:var(--surface-2);border:1px solid var(--line);border-top:3px solid var(--teal);border-radius:10px;padding:14px 14px 10px;font-size:14px;color:var(--ink);min-width:0;overflow-wrap:anywhere;}
+  .note .ts{display:block;margin-top:10px;font-family:var(--font-mono);font-size:11px;color:var(--ink-3);}
+  .empty{color:var(--ink-3);text-align:center;padding:24px 0 6px;margin:0;}
+  @media (max-width:520px){.card{padding:22px 18px;}}
+  @media (prefers-reduced-motion: reduce){.opt span, .btn-send{transition:none;}}
 </style>
 </head>
 <body>
-<div class="sidebar-line"></div>
 <div class="wrap">
   <header>
-    <div class="badge">KPulse · Feedback anónimo</div>
-    <h1>¿Cómo te fue con la charla de ayer?</h1>
-    <p>Nadie sabe quién respondió. Tu voto y tus notas ayudan a decidir el próximo tema y el próximo espacio de KPulse.</p>
+    <div class="badge">K-Pulse · Feedback anónimo</div>
+    <h1>Feedback K-Pulse</h1>
+    <p class="talk" id="talkLine" hidden></p>
+    <p class="lead">Cuatro preguntas, menos de un minuto. Las respuestas no guardan tu nombre ni tu correo.</p>
   </header>
 
-  <div class="gradient-divider"></div>
+  <div class="divider"></div>
 
-  <div class="card">
-    <h2 class="section-title">El pulso rápido</h2>
+  <div class="notice" id="offline" hidden></div>
 
-    <div class="pulse-question" data-question="liked">
-      <div class="pulse-label">¿Te gustó la charla?</div>
-      <div class="pulse-options">
-        <button class="pulse-btn" data-value="si">😍 Sí, mucho</button>
-        <button class="pulse-btn" data-value="masomenos">🙂 Más o menos</button>
-        <button class="pulse-btn" data-value="no">😕 No tanto</button>
+  <section class="card" id="formCard">
+    <form id="form" novalidate>
+      <fieldset id="qUtilidad">
+        <legend>¿Qué tan útil fue lo que escuchaste para tu día a día?</legend>
+        <div class="opts" role="radiogroup" aria-label="Utilidad"></div>
+      </fieldset>
+
+      <fieldset id="qEspacio">
+        <legend>¿Sentiste que era un espacio cómodo para participar?</legend>
+        <div class="opts" role="radiogroup" aria-label="Espacio cómodo"></div>
+      </fieldset>
+
+      <fieldset id="qTema">
+        <legend>¿Qué tema te gustaría para la próxima K-Pulse?</legend>
+        <div class="opts" role="radiogroup" aria-label="Tema para la próxima vez"></div>
+        <div id="otroWrap" hidden>
+          <input type="text" id="otroInput" maxlength="80" placeholder="¿Qué tema tienes en mente?" aria-label="Otro tema">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Si pudieras cambiar una sola cosa de esta charla, ¿cuál sería? <span class="optional">(opcional)</span></legend>
+        <textarea id="cambioInput" maxlength="240" placeholder="Ej: la duración, el horario, el ritmo, el espacio…"></textarea>
+      </fieldset>
+
+      <p id="formMsg" role="alert"></p>
+
+      <div class="form-foot">
+        <span class="hint" id="charCount">0 / 240</span>
+        <button type="submit" class="btn-send" id="sendBtn">Enviar respuestas</button>
       </div>
-      <div class="results" data-results="liked"></div>
-    </div>
+    </form>
+  </section>
 
-    <div class="pulse-question" data-question="return">
-      <div class="pulse-label">¿Volverías definitivamente a la próxima KPulse?</div>
-      <div class="pulse-options">
-        <button class="pulse-btn" data-value="si">✅ Sí, seguro</button>
-        <button class="pulse-btn" data-value="talvez">🤔 Tal vez</button>
-        <button class="pulse-btn" data-value="no">🚫 No creo</button>
+  <section class="card thanks" id="thanks" hidden>
+    <h2>Gracias, ya quedó tu respuesta</h2>
+    <p>Esto es lo que ha respondido el equipo hasta ahora.</p>
+  </section>
+
+  <section class="card" id="results" hidden>
+    <div class="results-head">
+      <h2>Lo que dice el equipo</h2>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="hint" id="totalCount"></span>
+        <button type="button" class="btn-ghost" id="refreshBtn">Actualizar</button>
       </div>
-      <div class="results" data-results="return"></div>
     </div>
-  </div>
-
-  <div class="card">
-    <h2 class="section-title">Notas y sugerencias</h2>
-    <div class="category-row" id="categoryRow">
-      <button class="cat-btn active" data-cat="tema">💡 Tema sugerido</button>
-      <button class="cat-btn" data-cat="espacio">🏠 Sobre el espacio</button>
-      <button class="cat-btn" data-cat="general">💬 Comentario general</button>
-    </div>
-    <textarea id="noteInput" maxlength="240" placeholder="Ej: me encantaría una charla sobre... / el espacio estuvo muy ruidoso / la duración fue perfecta..."></textarea>
-    <div class="composer-footer">
-      <span class="hint" id="charCount">0 / 240</span>
-      <button class="send" id="sendBtn">Enviar nota</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2 class="section-title">Lo que ha dicho el equipo</h2>
-    <div class="board" id="board"></div>
-  </div>
-
-  <footer class="foot">
-    Respuestas anónimas y compartidas para todo el equipo que abra este mismo espacio.
-    <br>
-    <button class="reset-link" id="resetLink">Reiniciar todos los datos</button>
-  </footer>
+    <div id="resultsBody"></div>
+  </section>
 </div>
 
 <script>
-const STORAGE_KEY = 'kpulse-feedback-data';
+(function(){
+  // Pega aquí la URL de la aplicación web de Apps Script (termina en /exec).
+  var API_URL = 'https://script.google.com/a/macros/koombea.com/s/AKfycbzUx69aPEZSskZHPpYfHwhZYsQFYiRVuQMrs8V36kOYF-AduCkOGZrBtCzyFt2-myQ6/exec';
 
-let data = {
-  liked: {si:0, masomenos:0, no:0},
-  return: {si:0, talvez:0, no:0},
-  notes: []
-};
+  var LS_KEY = 'kpulse-feedback-answered';
+  var UTIL  = {nada:'Nada', algo:'Algo', mucho:'Mucho'};
+  var ESP   = {si:'Sí', amedias:'A medias', no:'No'};
+  var TEMAS = {
+    estres:'Manejo del estrés y la ansiedad',
+    sueno:'Sueño y descanso',
+    limites:'Límites y equilibrio vida-trabajo',
+    comunicacion:'Comunicación y relaciones en el equipo',
+    finanzas:'Finanzas personales',
+    otro:'Otro'
+  };
 
-let selectedCategory = 'tema';
-let votedLiked = false;
-let votedReturn = false;
+  var round = 1;
+  var talk = '';
+  var responses = [];
+  var loaded = false;
 
-const board = document.getElementById('board');
-const noteInput = document.getElementById('noteInput');
-const charCount = document.getElementById('charCount');
-const sendBtn = document.getElementById('sendBtn');
-const categoryRow = document.getElementById('categoryRow');
-const resetLink = document.getElementById('resetLink');
-
-categoryRow.addEventListener('click', (e) => {
-  const btn = e.target.closest('.cat-btn');
-  if(!btn) return;
-  selectedCategory = btn.dataset.cat;
-  [...categoryRow.children].forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-});
-
-noteInput.addEventListener('input', () => {
-  charCount.textContent = `${noteInput.value.length} / 240`;
-});
-
-const LABELS = {
-  liked: {si:'Sí, mucho', masomenos:'Más o menos', no:'No tanto'},
-  return: {si:'Sí, seguro', talvez:'Tal vez', no:'No creo'}
-};
-
-function renderResults(question){
-  const el = document.querySelector(`[data-results="${question}"]`);
-  const counts = data[question];
-  const total = Object.values(counts).reduce((a,b) => a+b, 0);
-  el.innerHTML = '';
-  Object.keys(counts).forEach(key => {
-    const pct = total > 0 ? Math.round((counts[key] / total) * 100) : 0;
-    const row = document.createElement('div');
-    row.className = 'result-row';
-    row.innerHTML = `
-      <div class="result-row-labels"><span>${LABELS[question][key]}</span><span>${pct}%</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-    `;
-    el.appendChild(row);
-  });
-  const totalEl = document.createElement('div');
-  totalEl.className = 'total-votes';
-  totalEl.textContent = `${total} voto${total === 1 ? '' : 's'}`;
-  el.appendChild(totalEl);
-}
-
-function renderBoard(){
-  board.innerHTML = '';
-  if(data.notes.length === 0){
-    board.innerHTML = '<div class="empty-state">Aún no hay notas. ¡Sé el primero en dejar una sugerencia!</div>';
-    return;
+  function $(s){ return document.querySelector(s); }
+  function el(tag, cls, text){
+    var n = document.createElement(tag);
+    if(cls) n.className = cls;
+    if(text != null) n.textContent = text;
+    return n;
   }
-  const catLabel = {tema:'Tema sugerido', espacio:'Sobre el espacio', general:'Comentario general'};
-  [...data.notes].reverse().forEach(n => {
-    const div = document.createElement('div');
-    div.className = `note ${n.category}`;
-    const dateStr = new Date(n.ts).toLocaleDateString('es-CO', {day:'2-digit', month:'short'});
-    div.innerHTML = `
-      <span class="cat-tag">${catLabel[n.category] || 'Comentario'}</span>
-      <div>${escapeHtml(n.text)}</div>
-      <span class="ts">${dateStr}</span>
-    `;
-    board.appendChild(div);
-  });
-}
+  function getLocal(){ try{ return Number(localStorage.getItem(LS_KEY)) || 0; }catch(e){ return 0; } }
+  function setLocal(r){ try{ localStorage.setItem(LS_KEY, String(r)); }catch(e){} }
+  var configured = API_URL.indexOf('https://') === 0;
 
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-async function loadData(){
-  try{
-    const result = await window.storage.get(STORAGE_KEY, true);
-    if(result && result.value){
-      data = JSON.parse(result.value);
-      data.liked = data.liked || {si:0, masomenos:0, no:0};
-      data.return = data.return || {si:0, talvez:0, no:0};
-      data.notes = data.notes || [];
-    }
-  }catch(e){
-    // no data yet, use defaults
-  }
-  renderResults('liked');
-  renderResults('return');
-  renderBoard();
-}
-
-async function saveData(){
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
-  }catch(e){
-    console.error('No se pudo guardar', e);
-  }
-}
-
-document.querySelectorAll('.pulse-question').forEach(q => {
-  const question = q.dataset.question;
-  q.querySelectorAll('.pulse-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const alreadyVoted = question === 'liked' ? votedLiked : votedReturn;
-      if(alreadyVoted) return;
-      const value = btn.dataset.value;
-      data[question][value] = (data[question][value] || 0) + 1;
-      if(question === 'liked') votedLiked = true; else votedReturn = true;
-      q.querySelectorAll('.pulse-btn').forEach(b => {
-        b.disabled = true;
-        if(b === btn) b.classList.add('selected');
-      });
-      await saveData();
-      renderResults(question);
+  /* ---------- Formulario ---------- */
+  function buildGroup(fieldsetId, name, map, extraCls){
+    var box = document.querySelector('#' + fieldsetId + ' .opts');
+    Object.keys(map).forEach(function(key){
+      var label = el('label', 'opt' + (extraCls ? ' ' + extraCls : ''));
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = name;
+      input.value = key;
+      input.id = name + '-' + key;
+      label.append(input, el('span', null, map[key]));
+      box.append(label);
     });
+  }
+  buildGroup('qUtilidad', 'utilidad', UTIL);
+  buildGroup('qEspacio', 'espacio', ESP);
+  buildGroup('qTema', 'tema', TEMAS, 'topic');
+
+  var form = $('#form');
+  var otroWrap = $('#otroWrap');
+  var otroInput = $('#otroInput');
+  var cambioInput = $('#cambioInput');
+  var charCount = $('#charCount');
+  var formMsg = $('#formMsg');
+  var sendBtn = $('#sendBtn');
+
+  function chosen(name){
+    var n = form.querySelector('input[name="' + name + '"]:checked');
+    return n ? n.value : '';
+  }
+  form.addEventListener('change', function(e){
+    if(e.target && e.target.name === 'tema'){
+      otroWrap.hidden = e.target.value !== 'otro';
+      if(!otroWrap.hidden) otroInput.focus();
+    }
   });
-});
-
-sendBtn.addEventListener('click', async () => {
-  const text = noteInput.value.trim();
-  if(!text) return;
-  sendBtn.disabled = true;
-  sendBtn.textContent = 'Enviando...';
-
-  data.notes.push({
-    text,
-    category: selectedCategory,
-    ts: Date.now()
+  cambioInput.addEventListener('input', function(){
+    charCount.textContent = cambioInput.value.length + ' / 240';
   });
 
-  await saveData();
-  renderBoard();
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    formMsg.textContent = '';
+    if(!configured){ formMsg.textContent = 'Esta página aún no está conectada a la hoja de respuestas.'; return; }
+    var utilidad = chosen('utilidad'), espacio = chosen('espacio'), tema = chosen('tema');
+    var otro = otroInput.value.trim();
+    if(!utilidad || !espacio || !tema){
+      formMsg.textContent = 'Falta responder las tres primeras preguntas.';
+      return;
+    }
+    if(tema === 'otro' && !otro){
+      formMsg.textContent = 'Escribe cuál tema te gustaría.';
+      otroInput.focus();
+      return;
+    }
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Enviando…';
+    try{
+      // text/plain evita una solicitud previa (preflight) que Apps Script no responde.
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({
+          utilidad: utilidad,
+          espacio: espacio,
+          tema: tema,
+          otro: tema === 'otro' ? otro : '',
+          cambio: cambioInput.value.trim()
+        })
+      });
+      var out = await res.json();
+      if(!out.ok) throw new Error(out.error || 'error');
+      setLocal(round);
+      form.reset();
+      otroWrap.hidden = true;
+      charCount.textContent = '0 / 240';
+      await load();
+    }catch(err){
+      formMsg.textContent = 'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.';
+    }finally{
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Enviar respuestas';
+    }
+  });
 
-  noteInput.value = '';
-  charCount.textContent = '0 / 240';
-  sendBtn.disabled = false;
-  sendBtn.textContent = 'Enviar nota';
-});
+  /* ---------- Resultados ---------- */
+  function countBy(list, field, map){
+    var out = Object.keys(map).map(function(k){ return {key:k, label:map[k], count:0}; });
+    list.forEach(function(r){
+      for(var i = 0; i < out.length; i++){ if(out[i].key === r[field]){ out[i].count++; break; } }
+    });
+    return out;
+  }
+  function block(question, entries, total, sortDesc){
+    var sec = el('div', 'res-block');
+    sec.append(el('h3', 'res-q', question));
+    var list = entries.slice();
+    if(sortDesc) list.sort(function(a, b){ return b.count - a.count; });
+    var max = list.reduce(function(m, e){ return Math.max(m, e.count); }, 0);
+    list.forEach(function(e){
+      var pct = total ? Math.round(e.count / total * 100) : 0;
+      var row = el('div', 'row' + (max > 0 && e.count === max ? ' top' : ''));
+      var labels = el('div', 'row-labels');
+      labels.append(el('span', null, e.label), el('span', 'num', pct + '% · ' + e.count));
+      var track = el('div', 'track');
+      var fill = el('div', 'fill');
+      fill.style.width = pct + '%';
+      track.append(fill);
+      row.append(labels, track);
+      sec.append(row);
+    });
+    return sec;
+  }
+  function renderResults(){
+    var body = $('#resultsBody');
+    body.replaceChildren();
+    var total = responses.length;
+    $('#totalCount').textContent = total + (total === 1 ? ' respuesta' : ' respuestas');
+    if(!total){
+      body.append(el('p', 'empty', 'Todavía no hay respuestas. Cuando el equipo conteste, los resultados aparecen aquí.'));
+      return;
+    }
+    body.append(block('¿Qué tan útil fue lo que escuchaste para tu día a día?', countBy(responses, 'utilidad', UTIL), total, false));
+    body.append(block('¿Sentiste que era un espacio cómodo para participar?', countBy(responses, 'espacio', ESP), total, false));
+    var temas = block('¿Qué tema te gustaría para la próxima K-Pulse?', countBy(responses, 'tema', TEMAS), total, true);
+    var otros = responses.filter(function(r){ return r.tema === 'otro' && r.otro; });
+    if(otros.length){
+      var chips = el('div', 'chips');
+      otros.forEach(function(r){ chips.append(el('span', 'chip', r.otro)); });
+      temas.append(chips);
+    }
+    body.append(temas);
+    var cambios = responses.filter(function(r){ return r.cambio; }).sort(function(a, b){ return b.ts - a.ts; });
+    if(cambios.length){
+      var sec = el('div', 'res-block');
+      sec.append(el('h3', 'res-q', 'Lo que cambiarían de la charla'));
+      var board = el('div', 'board');
+      cambios.forEach(function(r){
+        var n = el('div', 'note');
+        n.append(el('div', null, r.cambio));
+        n.append(el('span', 'ts', new Date(r.ts).toLocaleDateString('es-CO', {day:'2-digit', month:'short'})));
+        board.append(n);
+      });
+      sec.append(board);
+      body.append(sec);
+    }
+  }
 
-resetLink.addEventListener('click', async () => {
-  if(!confirm('¿Reiniciar todos los votos y notas para todo el equipo? Esto no se puede deshacer.')) return;
-  data = {liked:{si:0,masomenos:0,no:0}, return:{si:0,talvez:0,no:0}, notes:[]};
-  await saveData();
-  votedLiked = false;
-  votedReturn = false;
-  document.querySelectorAll('.pulse-btn').forEach(b => {b.disabled = false; b.classList.remove('selected');});
-  renderResults('liked');
-  renderResults('return');
-  renderBoard();
-});
+  /* ---------- Carga y vistas ---------- */
+  function refresh(){
+    var answered = loaded && getLocal() === round;
+    var line = $('#talkLine');
+    line.hidden = !talk;
+    line.textContent = talk ? 'Charla: ' + talk : '';
+    $('#formCard').hidden = answered;
+    $('#thanks').hidden = !answered;
+    $('#results').hidden = !answered;
+    if(answered) renderResults();
+  }
+  async function load(){
+    if(!configured){
+      $('#offline').hidden = false;
+      $('#offline').textContent = 'Esta página aún no está conectada a la hoja de respuestas.';
+      return;
+    }
+    try{
+      var res = await fetch(API_URL);
+      var data = await res.json();
+      if(!data.ok) throw new Error('error');
+      round = Number(data.round) || 1;
+      talk = data.talk || '';
+      responses = data.responses || [];
+      loaded = true;
+      $('#offline').hidden = true;
+    }catch(err){
+      $('#offline').hidden = false;
+      $('#offline').textContent = 'No se pudieron cargar los datos. Recarga la página en unos segundos.';
+    }
+    refresh();
+  }
+  $('#refreshBtn').addEventListener('click', load);
 
-loadData();
+  refresh();
+  load();
+})();
 </script>
 </body>
 </html>
