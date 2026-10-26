@@ -90,27 +90,9 @@
   .btn-send{background:var(--gradient);color:var(--on-teal);border:0;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s ease, opacity .15s ease;}
   .btn-send:hover{transform:translateY(-1px);opacity:.93;}
   .btn-send:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-send:focus-visible, .btn-ghost:focus-visible{outline:2px solid var(--neon);outline-offset:2px;}
-  .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;}
-  .btn-ghost:hover{border-color:rgba(11,216,162,.5);color:var(--ink);}
+  .btn-send:focus-visible{outline:2px solid var(--neon);outline-offset:2px;}
   .thanks{border-color:rgba(11,216,162,.35);}
   .thanks p{margin:0;}
-  .results-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
-  .res-block{margin-top:26px;}
-  .res-block:first-of-type{margin-top:18px;}
-  .res-q{font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;line-height:1.4;}
-  .row{margin-bottom:10px;}
-  .row-labels{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-2);margin-bottom:5px;}
-  .row-labels .num{font-family:var(--font-mono);font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
-  .track{background:rgba(255,255,255,.07);border-radius:999px;height:8px;overflow:hidden;}
-  .fill{height:100%;border-radius:999px;background:var(--teal);}
-  .row.top .fill{background:var(--gradient);}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-  .chip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);overflow-wrap:anywhere;}
-  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
-  .note{background:var(--surface-2);border:1px solid var(--line);border-top:3px solid var(--teal);border-radius:10px;padding:14px 14px 10px;font-size:14px;color:var(--ink);min-width:0;overflow-wrap:anywhere;}
-  .note .ts{display:block;margin-top:10px;font-family:var(--font-mono);font-size:11px;color:var(--ink-3);}
-  .empty{color:var(--ink-3);text-align:center;padding:24px 0 6px;margin:0;}
   @media (max-width:520px){.card{padding:22px 18px;}}
   @media (prefers-reduced-motion: reduce){.opt span, .btn-send{transition:none;}}
 </style>
@@ -164,18 +146,7 @@
 
   <section class="card thanks" id="thanks" hidden>
     <h2>Gracias, ya quedó tu respuesta</h2>
-    <p>Esto es lo que ha respondido el equipo hasta ahora.</p>
-  </section>
-
-  <section class="card" id="results" hidden>
-    <div class="results-head">
-      <h2>Lo que dice el equipo</h2>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="hint" id="totalCount"></span>
-        <button type="button" class="btn-ghost" id="refreshBtn">Actualizar</button>
-      </div>
-    </div>
-    <div id="resultsBody"></div>
+    <p>Tus respuestas son anónimas y nos ayudan a elegir el próximo tema de K-Pulse.</p>
   </section>
 </div>
 
@@ -198,7 +169,6 @@
 
   var round = 1;
   var talk = '';
-  var responses = [];
   var loaded = false;
 
   function $(s){ return document.querySelector(s); }
@@ -288,7 +258,8 @@
       form.reset();
       otroWrap.hidden = true;
       charCount.textContent = '0 / 240';
-      await load();
+      loaded = true;
+      refresh();
     }catch(err){
       formMsg.textContent = 'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.';
     }finally{
@@ -296,69 +267,6 @@
       sendBtn.textContent = 'Enviar respuestas';
     }
   });
-
-  /* ---------- Resultados ---------- */
-  function countBy(list, field, map){
-    var out = Object.keys(map).map(function(k){ return {key:k, label:map[k], count:0}; });
-    list.forEach(function(r){
-      for(var i = 0; i < out.length; i++){ if(out[i].key === r[field]){ out[i].count++; break; } }
-    });
-    return out;
-  }
-  function block(question, entries, total, sortDesc){
-    var sec = el('div', 'res-block');
-    sec.append(el('h3', 'res-q', question));
-    var list = entries.slice();
-    if(sortDesc) list.sort(function(a, b){ return b.count - a.count; });
-    var max = list.reduce(function(m, e){ return Math.max(m, e.count); }, 0);
-    list.forEach(function(e){
-      var pct = total ? Math.round(e.count / total * 100) : 0;
-      var row = el('div', 'row' + (max > 0 && e.count === max ? ' top' : ''));
-      var labels = el('div', 'row-labels');
-      labels.append(el('span', null, e.label), el('span', 'num', pct + '% · ' + e.count));
-      var track = el('div', 'track');
-      var fill = el('div', 'fill');
-      fill.style.width = pct + '%';
-      track.append(fill);
-      row.append(labels, track);
-      sec.append(row);
-    });
-    return sec;
-  }
-  function renderResults(){
-    var body = $('#resultsBody');
-    body.replaceChildren();
-    var total = responses.length;
-    $('#totalCount').textContent = total + (total === 1 ? ' respuesta' : ' respuestas');
-    if(!total){
-      body.append(el('p', 'empty', 'Todavía no hay respuestas. Cuando el equipo conteste, los resultados aparecen aquí.'));
-      return;
-    }
-    body.append(block('¿Qué tan útil fue lo que escuchaste para tu día a día?', countBy(responses, 'utilidad', UTIL), total, false));
-    body.append(block('¿Sentiste que era un espacio cómodo para participar?', countBy(responses, 'espacio', ESP), total, false));
-    var temas = block('¿Qué tema te gustaría para la próxima K-Pulse?', countBy(responses, 'tema', TEMAS), total, true);
-    var otros = responses.filter(function(r){ return r.tema === 'otro' && r.otro; });
-    if(otros.length){
-      var chips = el('div', 'chips');
-      otros.forEach(function(r){ chips.append(el('span', 'chip', r.otro)); });
-      temas.append(chips);
-    }
-    body.append(temas);
-    var cambios = responses.filter(function(r){ return r.cambio; }).sort(function(a, b){ return b.ts - a.ts; });
-    if(cambios.length){
-      var sec = el('div', 'res-block');
-      sec.append(el('h3', 'res-q', 'Lo que cambiarían de la charla'));
-      var board = el('div', 'board');
-      cambios.forEach(function(r){
-        var n = el('div', 'note');
-        n.append(el('div', null, r.cambio));
-        n.append(el('span', 'ts', new Date(r.ts).toLocaleDateString('es-CO', {day:'2-digit', month:'short'})));
-        board.append(n);
-      });
-      sec.append(board);
-      body.append(sec);
-    }
-  }
 
   /* ---------- Carga y vistas ---------- */
   function refresh(){
@@ -368,8 +276,6 @@
     line.textContent = talk ? 'Charla: ' + talk : '';
     $('#formCard').hidden = answered;
     $('#thanks').hidden = !answered;
-    $('#results').hidden = !answered;
-    if(answered) renderResults();
   }
   async function load(){
     if(!configured){
@@ -383,7 +289,6 @@
       if(!data.ok) throw new Error('error');
       round = Number(data.round) || 1;
       talk = data.talk || '';
-      responses = data.responses || [];
       loaded = true;
       $('#offline').hidden = true;
     }catch(err){
@@ -392,8 +297,6 @@
     }
     refresh();
   }
-  $('#refreshBtn').addEventListener('click', load);
-
   refresh();
   load();
 })();
