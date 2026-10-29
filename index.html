@@ -147,6 +147,7 @@
   <section class="card thanks" id="thanks" hidden>
     <h2>Gracias, ya quedó tu respuesta</h2>
     <p>Tus respuestas son anónimas y nos ayudan a elegir el próximo tema de K-Pulse.</p>
+    <p style="margin-top:14px"><button type="button" id="again" style="background:none;border:1px solid currentColor;color:inherit;border-radius:10px;padding:10px 16px;font:inherit;cursor:pointer">Responder otra vez</button></p>
   </section>
 </div>
 
@@ -297,6 +298,11 @@
     }
     refresh();
   }
+  $('#again').addEventListener('click', function(){
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+    refresh();
+    window.scrollTo(0,0);
+  });
   refresh();
   load();
 })();
