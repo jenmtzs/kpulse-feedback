@@ -144,6 +144,11 @@
     </form>
   </section>
 
+  <section class="card thanks" id="closed" hidden>
+    <h2>Este formulario está cerrado por ahora</h2>
+    <p>Gracias por tu interés. Si se vuelve a abrir, podrás responder desde este mismo enlace.</p>
+  </section>
+
   <section class="card thanks" id="thanks" hidden>
     <h2>Gracias, ya quedó tu respuesta</h2>
     <p>Tus respuestas son anónimas y nos ayudan a elegir el próximo tema de K-Pulse.</p>
@@ -171,6 +176,7 @@
   var round = 1;
   var talk = '';
   var loaded = false;
+  var open = true;
 
   function $(s){ return document.querySelector(s); }
   function el(tag, cls, text){
@@ -254,7 +260,7 @@
         })
       });
       var out = await res.json();
-      if(!out.ok) throw new Error(out.error || 'error');
+      if(!out.ok){ if(out.error === 'cerrado'){ open = false; refresh(); return; } throw new Error(out.error || 'error'); }
       setLocal(round);
       form.reset();
       otroWrap.hidden = true;
@@ -275,8 +281,9 @@
     var line = $('#talkLine');
     line.hidden = !talk;
     line.textContent = talk ? 'Charla: ' + talk : '';
-    $('#formCard').hidden = answered;
-    $('#thanks').hidden = !answered;
+    $('#formCard').hidden = answered || !open;
+    $('#thanks').hidden = !answered || !open;
+    $('#closed').hidden = open;
   }
   async function load(){
     if(!configured){
@@ -290,6 +297,7 @@
       if(!data.ok) throw new Error('error');
       round = Number(data.round) || 1;
       talk = data.talk || '';
+      open = data.open !== false;
       loaded = true;
       $('#offline').hidden = true;
     }catch(err){
